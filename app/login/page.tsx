@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 
 const LoginPage = () => {
   const { status } = useSession();
+  const handleSigInClcik = () => signIn();
   if (status === "authenticated") {
     redirect("/");
   }
@@ -27,7 +28,7 @@ const LoginPage = () => {
           monitorar suas movimentações, e oferecer insights personalizados,
           facilitando o controle do seu orçamento.
         </p>
-        <Button variant="outline" onClick={() => signIn()}>
+        <Button variant="outline" onClick={() => handleSigInClcik()}>
           <LogInIcon className="mr-2" />
           Fazer login ou criar conta
         </Button>
