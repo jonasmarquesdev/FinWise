@@ -2,17 +2,10 @@
 
 import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { redirect } from "next/navigation";
 
 const UserMenu = () => {
-  const { data, status } = useSession();
-
+  const { data } = useSession();
   const handleSigOutClick = () => signOut();
-
-  if (status === "unauthenticated") {
-    redirect("/login");
-  }
-
   return (
     <>
       <div className="flex items-center gap-4">
