@@ -18,12 +18,13 @@ interface HomeProps {
 
 const Home = async ({ searchParams: { month } }: HomeProps) => {
   const session = await getServerSession(authOptions);
-  if (!session?.user.id) {
+  const userId = session?.user.id;
+  if (!userId) {
     redirect("/login");
   }
   const monthIsInvalid = !month || !isMatch(month, "MM");
   if (monthIsInvalid) {
-    redirect("?month=01");
+    redirect(`/?month=${new Date().getMonth() + 1}`);
   }
   const dashboard = await getDashboard(month);
   return (

@@ -1,9 +1,17 @@
 import { db } from "@/app/_lib/prisma";
 import { TransactionType } from "@prisma/client";
 import { TotalExpensePerCategory, TransactionPercentagePerType } from "./types";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/_lib/auth";
 
 export const getDashboard = async (month: string) => {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
   const where = {
+    userId,
     date: {
       gte: new Date(`2025-${month}-01`),
       lt: new Date(`2025-${month}-31`),
@@ -74,7 +82,7 @@ export const getDashboard = async (month: string) => {
   const lastTransactions = await db.transaction.findMany({
     where,
     orderBy: { date: "desc" },
-    take: 30,
+    take: 15,
   });
   return {
     balance,
