@@ -5,10 +5,18 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader } from "../_components/ui/card";
 import { CheckIcon, XIcon } from "lucide-react";
 import AcquirePlanButton from "./_components/acquire-plan-button";
+import { Badge } from "../_components/ui/badge";
+import { db } from "../_lib/prisma";
 
 const SubscriptionPage = async () => {
   const session = await getServerSession(authOptions);
   const userId = session?.user.id;
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { subscriptionPlan: true },
+  });
+
+  const hasPremiumPlan = user?.subscriptionPlan === "premium";
   if (!userId) {
     redirect("/login");
   }
@@ -47,11 +55,11 @@ const SubscriptionPage = async () => {
 
           <Card className="w-[450px]">
             <CardHeader className="relative border-b border-solid py-8">
-              {/* {hasPremiumPlan && (
+              {hasPremiumPlan && (
                 <Badge className="absolute left-4 top-12 bg-primary/10 text-primary">
-                Ativo
-              </Badge>
-              )} */}
+                  Ativo
+                </Badge>
+              )}
               <h2 className="text-center text-2xl font-semibold">
                 Plano Premium
               </h2>
@@ -70,7 +78,7 @@ const SubscriptionPage = async () => {
                 <CheckIcon className="text-primary" />
                 <p>Relatórios de IA</p>
               </div>
-              <AcquirePlanButton />
+              <AcquirePlanButton hasPremiumPlan={hasPremiumPlan} />
             </CardContent>
           </Card>
         </div>
