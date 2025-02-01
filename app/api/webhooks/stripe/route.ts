@@ -1,8 +1,13 @@
+import { authOptions } from "@/app/_lib/auth";
 import { db } from "@/app/_lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
 export const POST = async (request: Request) => {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
+
   if (!process.env.STRIPE_WEBHOOK_SECRET || !process.env.STRIPE_SECRET_KEY) {
     return NextResponse.error();
   }
@@ -32,8 +37,7 @@ export const POST = async (request: Request) => {
   switch (event.type) {
     case "invoice.paid": {
       // Update User Plan
-      const { customer, subscription, subscription_details } =
-        event.data.object;
+      const { customer, subscription } = event.data.object;
 
       const customerId =
         typeof customer === "string"
@@ -48,10 +52,8 @@ export const POST = async (request: Request) => {
             ? subscription.id
             : null;
 
-      const prismaUserId = subscription_details?.metadata?.prisma_user_id;
-
       await db.user.update({
-        where: { id: prismaUserId },
+        where: { id: userId },
         data: {
           stripeCustomerId: customerId,
           stripeSubscriptionId: subscriptionId,
