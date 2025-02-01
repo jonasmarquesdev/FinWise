@@ -7,6 +7,7 @@ import { CheckIcon, XIcon } from "lucide-react";
 import AcquirePlanButton from "./_components/acquire-plan-button";
 import { Badge } from "../_components/ui/badge";
 import { db } from "../_lib/prisma";
+import { getCurrentMonthTransactions } from "../_data/get-current-month-transactions";
 
 const SubscriptionPage = async () => {
   const session = await getServerSession(authOptions);
@@ -15,8 +16,8 @@ const SubscriptionPage = async () => {
     where: { id: userId },
     select: { subscriptionPlan: true },
   });
-
   const hasPremiumPlan = user?.subscriptionPlan === "premium";
+  const currentMonthTransactions = await getCurrentMonthTransactions();
   if (!userId) {
     redirect("/login");
   }
@@ -42,8 +43,7 @@ const SubscriptionPage = async () => {
               <div className="flex items-center gap-2">
                 <CheckIcon className="text-primary" />
                 <p>
-                  Apenas 10 transações por mês
-                  {/* ({currentMonthTransactions}/10) */}
+                  Apenas 10 transações por mês ({currentMonthTransactions}/10)
                 </p>
               </div>
               <div className="flex items-center gap-2">
