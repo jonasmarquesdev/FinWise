@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Mulish } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./_providers/auth";
+import { Toaster } from "./_components/ui/sonner";
 
 const mulish = Mulish({
   subsets: ["latin-ext"],
@@ -23,6 +24,7 @@ export default function RootLayout({
         <AuthProvider>
           <div className="flex h-full flex-col overflow-hidden">{children}</div>
         </AuthProvider>
+        <Toaster />
       </body>
     </html>
   );
