@@ -59,6 +59,18 @@ const TransactionsPieChart = ({
       fill: chartConfig[TransactionType.INVESTMENT].color,
     },
   ];
+
+  const hasData = chartData.some((item) => item.amount > 0);
+  const defaultData = hasData
+    ? chartData
+    : [
+        {
+          type: "DEFAULT",
+          amount: 1,
+          fill: "#D3D3D3",
+        },
+      ];
+
   return (
     <Card className="flex flex-col p-6">
       <CardContent className="flex-1 pb-0">
@@ -72,7 +84,7 @@ const TransactionsPieChart = ({
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
+              data={defaultData}
               dataKey="amount"
               nameKey="type"
               innerRadius={60}
