@@ -72,8 +72,8 @@ const TransactionsPieChart = ({
       ];
 
   return (
-    <Card className="flex flex-col p-6">
-      <CardContent className="flex-1 pb-0">
+    <Card className="flex flex-col sm:p-0 md:min-w-[220px] md:p-6">
+      <CardContent className="flex-1 md:py-6 lg:p-0">
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-[250px]"
@@ -92,7 +92,7 @@ const TransactionsPieChart = ({
           </PieChart>
         </ChartContainer>
 
-        <div className="space-y-3">
+        <div className="space-y-3 lg:px-6">
           <PercentageItem
             title={chartConfig[TransactionType.DEPOSIT].label}
             value={typesPercentage[TransactionType.DEPOSIT] || 0}
