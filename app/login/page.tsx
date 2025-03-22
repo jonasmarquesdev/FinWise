@@ -10,7 +10,7 @@ const LoginPage = () => {
   const { status } = useSession();
   const handleSigInClcik = () => signIn();
   if (status === "authenticated") {
-    redirect("/");
+    redirect("/welcome");
   }
   return (
     <div className="grid h-full grid-cols-2">
