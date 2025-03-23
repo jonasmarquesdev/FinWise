@@ -1,7 +1,14 @@
 "use client";
 
 import { Button } from "./ui/button";
-import { HomeIcon, LogInIcon, LogOutIcon } from "lucide-react";
+import {
+  HomeIcon,
+  LogInIcon,
+  LogOutIcon,
+  Crown,
+  Receipt,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
@@ -25,6 +32,21 @@ const Header = () => {
       label: "Início",
       href: "/",
       icon: <HomeIcon size={16} />,
+    },
+    {
+      label: "Transações",
+      href: "/transactions",
+      icon: <Receipt size={16} />,
+    },
+    {
+      label: "Assinatura",
+      href: "/subscription",
+      icon: <Crown size={16} />,
+    },
+    {
+      label: "Configurações",
+      href: "/",
+      icon: <Settings size={16} />,
     },
   ];
 
