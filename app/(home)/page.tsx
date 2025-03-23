@@ -16,10 +16,11 @@ import { db } from "../_lib/prisma";
 interface HomeProps {
   searchParams: {
     month: string;
+    year: string;
   };
 }
 
-const Home = async ({ searchParams: { month } }: HomeProps) => {
+const Home = async ({ searchParams: { month, year } }: HomeProps) => {
   const session = await getServerSession(authOptions);
   const userId = session?.user.id;
   if (!userId) {
@@ -28,9 +29,11 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
   const isSpecialMonth = month === "0";
   const monthIsInvalid = !isSpecialMonth && (!month || !isMatch(month, "MM"));
   if (monthIsInvalid) {
-    redirect(`/?month=${new Date().getMonth() + 1}`);
+    redirect(
+      `/?month=${new Date().getMonth() + 1}&year=${new Date().getFullYear()}`,
+    );
   }
-  const dashboard = await getDashboard(month);
+  const dashboard = await getDashboard(month, year);
   const userCanAddTransaction = await canUserAddTransaction();
   const user = await db.user.findUnique({
     where: { id: userId },

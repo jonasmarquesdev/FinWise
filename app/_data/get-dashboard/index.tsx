@@ -3,8 +3,9 @@ import { TransactionType } from "@prisma/client";
 import { TotalExpensePerCategory, TransactionPercentagePerType } from "./types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/_lib/auth";
+import { lastDayOfMonth } from "date-fns";
 
-export const getDashboard = async (month: string) => {
+export const getDashboard = async (month: string, year: string) => {
   const session = await getServerSession(authOptions);
   const userId = session?.user.id;
   if (!userId) {
@@ -14,12 +15,33 @@ export const getDashboard = async (month: string) => {
     userId,
     date: {},
   };
-  if (month !== "0") {
+
+  if (month === "0" && year === "0") {
+    where.date = {};
+  } else if (month === "0" && year !== "0") {
+    const startDate = new Date(Number(year), 0, 1);
+    const endDate = new Date(Number(year), 11, 31, 23, 59, 59, 999);
     where.date = {
-      gte: new Date(`2025-${month}-01`),
-      lt: new Date(`2025-${month}-31`),
+      gte: startDate,
+      lte: endDate,
+    };
+  } else if (year === "0" && month !== "0") {
+    // TODO fix: map of month's
+    const startDate = new Date(2000, Number(month) - 1, 1);
+    const endDate = lastDayOfMonth(startDate);
+    where.date = {
+      gte: startDate,
+      lte: endDate,
+    };
+  } else {
+    const startDate = new Date(Number(year), Number(month) - 1, 1);
+    const endDate = lastDayOfMonth(startDate);
+    where.date = {
+      gte: startDate,
+      lte: endDate,
     };
   }
+
   const depositsTotal = Number(
     (
       await db.transaction.aggregate({
