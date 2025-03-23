@@ -12,11 +12,14 @@ export const getDashboard = async (month: string) => {
   }
   const where = {
     userId,
-    date: {
+    date: {},
+  };
+  if (month !== "0") {
+    where.date = {
       gte: new Date(`2025-${month}-01`),
       lt: new Date(`2025-${month}-31`),
-    },
-  };
+    };
+  }
   const depositsTotal = Number(
     (
       await db.transaction.aggregate({
