@@ -8,6 +8,9 @@ import {
   SelectValue,
 } from "@/app/_components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
+import { Skeleton } from "@/app/_components/ui/skeleton";
+import { cn } from "@/app/_lib/utils";
 
 const MONTH_OPTIONS = [
   { value: "0", label: "Tudo" },
@@ -39,46 +42,84 @@ const TimeSelect = () => {
   const searchParams = useSearchParams();
   const month = searchParams.get("month");
   const year = searchParams.get("year");
+  const [isPending, startTransition] = useTransition();
 
-  const handleMonthChange = (month: string) => {
-    push(`/?month=${month}&year=${year}`);
+  const handleMonthChange = (newMonth: string) => {
+    if (month === "0" && newMonth !== "0") {
+      const currentYear = new Date().getFullYear();
+      startTransition(() => {
+        push(`/?month=${newMonth}&year=${currentYear}`);
+      });
+      return;
+    }
+    startTransition(() => {
+      push(`/?month=${newMonth}&year=${year}`);
+    });
   };
   const handleYearChange = (year: string) => {
-    push(`/?month=${month}&year=${year}`);
+    if (year === "0") {
+      startTransition(() => {
+        push(`/?month=0&year=${year}`);
+      });
+      return;
+    }
+    startTransition(() => {
+      push(`/?month=${month}&year=${year}`);
+    });
   };
   return (
-    <div className="flex gap-2">
-      <Select
-        onValueChange={(value) => handleMonthChange(value)}
-        defaultValue={month ?? ""}
-      >
-        <SelectTrigger className="w-[150px] rounded-full">
-          <SelectValue placeholder="Mês" />
-        </SelectTrigger>
-        <SelectContent>
-          {MONTH_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex items-center gap-2">
+      <div className="relative">
+        <Select
+          onValueChange={(value) => handleMonthChange(value)}
+          value={month ?? ""}
+        >
+          <SelectTrigger
+            className={cn(
+              "w-[150px] rounded-full focus:ring-0 focus:ring-offset-0",
+              isPending && "text-primary",
+            )}
+          >
+            <SelectValue placeholder="Mês" />
+          </SelectTrigger>
+          <SelectContent>
+            {MONTH_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {isPending && (
+          <Skeleton className="absolute inset-0 rounded-full opacity-70" />
+        )}
+      </div>
 
-      <Select
-        onValueChange={(value) => handleYearChange(value)}
-        defaultValue={year ?? ""}
-      >
-        <SelectTrigger className="w-[150px] rounded-full">
-          <SelectValue placeholder="Ano" />
-        </SelectTrigger>
-        <SelectContent>
-          {YEAR_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="relative">
+        <Select
+          onValueChange={(value) => handleYearChange(value)}
+          value={year ?? ""}
+        >
+          <SelectTrigger
+            className={cn(
+              "w-[150px] rounded-full focus:ring-0 focus:ring-offset-0",
+              isPending && "text-primary",
+            )}
+          >
+            <SelectValue placeholder="Ano" />
+          </SelectTrigger>
+          <SelectContent>
+            {YEAR_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {isPending && (
+          <Skeleton className="absolute inset-0 rounded-full opacity-70" />
+        )}
+      </div>
     </div>
   );
 };
